@@ -1,0 +1,12 @@
+Bootstrap: docker
+From: rocm/megatron-lm:24.12-dev
+
+%environment
+
+%post
+    git clone --depth 1 --branch bb93ccbfeae6363c67b361a97a27c74ab86e7e92 https://github.com/ROCm/Megatron-LM
+    pushd Megatron-LM
+
+%files
+
+%runscript
