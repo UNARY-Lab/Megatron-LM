@@ -116,6 +116,7 @@ if [[ $MODEL_SIZE -eq 8 ]]; then #llama2-7B
         NUM_HEADS=32 # e.g. llama-13b: 40
         SEQ_LENGTH=$SEQ_LENGTH
         NUM_KV_HEADS=8 # llama2 70B uses GQA
+        MAX_POSITION_EMBEDDINGS=8192
 elif [[ $MODEL_SIZE -eq 70 ]]; then
         HIDDEN_SIZE=8192 # e.g. llama-13b: 5120
         FFN_HIDDEN_SIZE=28672 # e.g. llama-13b: 13824
@@ -124,6 +125,14 @@ elif [[ $MODEL_SIZE -eq 70 ]]; then
         NUM_KV_HEADS=8 # llama3 70B uses GQA
         SEQ_LENGTH=$SEQ_LENGTH
         MAX_POSITION_EMBEDDINGS=$MAX_POSITION_EMBEDDINGS
+elif [[ $MODEL_SIZE -eq 13 ]]; then # llama2-13B
+        HIDDEN_SIZE=5120 # e.g. llama-13b: 5120
+        FFN_HIDDEN_SIZE=13824 # e.g. llama-13b: 13824
+        NUM_LAYERS=40 # e.g. llama-13b: 40
+        NUM_HEADS=40 # e.g. llama-13b: 40
+        NUM_KV_HEADS=40 # llama3 70B uses GQA
+        SEQ_LENGTH=$SEQ_LENGTH
+        MAX_POSITION_EMBEDDINGS=4096
 else
         echo "Model size not supported."
         exit 1

@@ -1,0 +1,63 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/pytorch:24.09-py3
+# Bootstrap: localimage
+# From: /sw/user/NGC_containers/pytorch_24.09-py3.sif
+
+%environment
+    export WORKDIR=/workspace/ft-llm
+    export PYTHONPATH="${PYTHONPATH}:/workspace/ft-llm/megatron-lm"
+
+%post
+    apt-get update && apt-get install --no-upgrade -y libsndfile1 ffmpeg
+    # Set working directory
+    export WORKDIR=/workspace/ft-llm
+    mkdir -p $WORKDIR
+    cd $WORKDIR
+
+    # Configure git
+    git config --global user.name "a"
+    git config --global user.email "a"
+
+    # Set arguments
+    export MEGATRON_REVISION=24.09-alpha.rc0
+    export NEMO_REVISION=24.09-alpha.rc0-arm
+
+    pip install --upgrade pip
+
+    ## NeMo
+    pip install Cython packaging
+    # pip install git+https://github.com/UNARY-Lab/NeMo.git@${NEMO_REVISION}#egg=nemo_toolkit[nlp]
+    cd NeMo
+    pip install -e ".[nlp]"
+
+    ## Megatron-core
+    pip uninstall -y megatron-core
+    git clone https://github.com/NVIDIA/Megatron-LM
+    cd Megatron-LM
+    echo MEGATRON_REVISION=${MEGATRON_REVISION}
+    git checkout ${MEGATRON_REVISION}
+    echo MEGATRON_COMMIT_HASH=$(git rev-parse HEAD)
+    pip install .
+    cd megatron/core/datasets
+    make
+
+    cd /workspace/ft-llm/NeMo/nemo/collections/nlp/data/language_modeling/megatron
+    g++ -O3 -Wall -shared -std=c++11 -fPIC -fdiagnostics-color -I/usr/include/python3.10 -I/usr/local/lib/python3.10/dist-packages/pybind11/include helpers.cpp -o helpers.cpython-310-aarch64-linux-gnu.so
+
+    cd $WORKDIR
+
+    pip install setuptools==69.5.1
+    # pip install huggingface_hub==0.23.5
+
+    ## Fix opencc
+    apt-get update && apt-get install -y --no-install-recommends libopencc-dev
+
+    pip install -r requirements.txt
+
+%files
+    . /workspace/ft-llm
+    /work/nvme/bcrc/mkurzynski/github/NeMo/ /workspace/ft-llm/NeMo
+
+%runscript
+    cd /workspace/ft-llm
+    exec "$@"

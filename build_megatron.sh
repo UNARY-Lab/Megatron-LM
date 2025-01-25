@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=build_megatron
 #SBATCH --output=build_megatron_%j.out
-#SBATCH -t 08:00:00
-#SBATCH -p mi2104x
-#SBATCH -q alloc_diwu_05142024_06302025
+#SBATCH --time=08:00:00
+#SBATCH --partition=ghx4
+#SBATCH --account=bcrc-dtai-gh
+#SBATCH --gpus-per-node=4
 
 cd ${SLURM_SUBMIT_DIR} || { echo "Directory not found"; exit 1; }
-# apptainer build --tmpdir $MYHOME/.apptainer --force nemo-container.sif nemo.def
-apptainer pull megatron-container.sif docker://rocm/megatron-lm:24.12-dev
+apptainer build --force megatron-container.sif nemo.def
