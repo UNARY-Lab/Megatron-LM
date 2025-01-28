@@ -228,7 +228,7 @@ EXTRA_ARGS="
 "
 
 if [ "$ENABLE_PROFILING" -eq 1 ]; then
-EXTRA_ARGS="$EXTRA_ARGS --profile --use-pytorch-profiler --tensorboard-dir $LOG_DIR"
+EXTRA_ARGS="$EXTRA_ARGS --profile --use-pytorch-profiler --profile-step-start=8 --profile-step-end=10 --tensorboard-dir $LOG_DIR"
 fi
 
 if [ "$USE_FLASH_ATTN" -eq 1 ]; then

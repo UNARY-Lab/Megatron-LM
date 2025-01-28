@@ -1434,6 +1434,14 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
                 prof.stop()
             else:
                 torch.cuda.cudart().cudaProfilerStop()
+        else:
+            print(
+            f"Unable to stop profiling. Need "
+            f"profile:{args.profile}=={True}, "
+            f"iteration:{iteration}=={args.profile_step_end}, "
+            f"rank:{torch.distributed.get_rank() in args.profile_ranks}=={True}, "
+            f"pytorch_profiler is {args.use_pytorch_profiler}"
+            )
 
         if args.manual_gc:
             if args.manual_gc_interval != 0 and iteration % args.manual_gc_interval == 0:

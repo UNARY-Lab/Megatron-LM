@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=4
 #SBATCH --mem=748GB
-#SBATCH --time=02:00:00
+#SBATCH --time=00:30:00
 
 
 cd $SLURM_SUBMIT_DIR
@@ -22,6 +22,7 @@ export MODEL_SIZE=13
 export TP=4
 export TE_FP8=0
 export SEQ_LENGTH=4096
+export ENABLE_PROFILING=1
 
 echo "RUNANDTIME_START $(date +%s)"
 time srun apptainer exec --nv \
