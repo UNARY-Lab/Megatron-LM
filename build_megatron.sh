@@ -7,4 +7,9 @@
 
 cd ${SLURM_SUBMIT_DIR} || { echo "Directory not found"; exit 1; }
 # apptainer build --tmpdir $MYHOME/.apptainer --force nemo-container.sif nemo.def
-apptainer pull megatron-container.sif docker://rocm/megatron-lm:24.12-dev
+
+### gfx942
+# apptainer pull megatron-container.sif docker://rocm/megatron-lm:24.12-dev
+
+### gfx90a
+apptainer build --tmpdir $MYHOME/.apptainer --force megatron-container-gfx90a.sif megatron.def

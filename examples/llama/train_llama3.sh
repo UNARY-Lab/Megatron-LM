@@ -4,7 +4,7 @@
 #
 # See LICENSE for license information.
 #################################################################################
-#set -x
+set -x
 
 # set envs 
 export GPU_MAX_HW_QUEUES=2
@@ -266,14 +266,20 @@ run_cmd="
         $TRAIN_ARGS \
 "
 
-if [ "$TEE_OUTPUT" -eq 0 ]; then 
-    run_cmd="$run_cmd >& $TRAIN_LOG"
-else
-    run_cmd="$run_cmd |& tee $TRAIN_LOG"
+if [ "$ENABLE_PROFILING" -eq 1 ]; then
+    run_cmd="rocprof -i input3.txt $run_cmd"
 fi
+
+# if [ "$TEE_OUTPUT" -eq 0 ]; then 
+#     run_cmd="$run_cmd >& $TRAIN_LOG"
+# else
+#     run_cmd="$run_cmd |& tee $TRAIN_LOG"
+# fi
 
 if [ "$NO_TRAINING" -eq 0 ]; then 
     eval $run_cmd
+    ret_code=$?
+    echo "exited with $ret_code"
 fi
 
 

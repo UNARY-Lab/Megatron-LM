@@ -1,12 +1,80 @@
 Bootstrap: docker
-From: rocm/megatron-lm:24.12-dev
+From: rocm/pytorch:latest
 
 %environment
-
-%post
-    git clone --depth 1 --branch bb93ccbfeae6363c67b361a97a27c74ab86e7e92 https://github.com/ROCm/Megatron-LM
-    pushd Megatron-LM
+    export WORKDIR=/workspace
+    export STAGEDIR=/workspace/installs
+    export CAUSAL_CONV1D_FORCE_BUILD=TRUE
+    export MAMBA_FORCE_BUILD=TRUE
+    export PYTORCH_ROCM_ARCH_OVERRIDE="gfx90a"
+    export HIP_ARCHITECTURES=${PYTORCH_ROCM_ARCH_OVERRIDE}
+    export NVTE_FRAMEWORK=pytorch
+    export PYTORCH_ROCM_ARCH=${PYTORCH_ROCM_ARCH_OVERRIDE}
+    export NVTE_USE_HIPBLASLT=1
 
 %files
+    . workspace/Megatron-LM
 
-%runscript
+%post
+    export WORKDIR=/workspace
+    export STAGEDIR=/workspace/installs
+    export CAUSAL_CONV1D_FORCE_BUILD=TRUE
+    export MAMBA_FORCE_BUILD=TRUE
+    export PYTORCH_ROCM_ARCH_OVERRIDE="gfx90a"
+    export HIP_ARCHITECTURES=${PYTORCH_ROCM_ARCH_OVERRIDE}
+    export NVTE_FRAMEWORK=pytorch
+    export PYTORCH_ROCM_ARCH=${PYTORCH_ROCM_ARCH_OVERRIDE}
+    export NVTE_USE_HIPBLASLT=1
+    export OPENBLAS_NUM_THREADS=34
+
+    apt-get update && apt-get upgrade -y
+
+    mkdir -p $WORKDIR
+    mkdir -p $STAGEDIR
+
+    cd $WORKDIR
+    cd Megatron-LM
+    pip3 install \
+    scipy \
+    einops \
+    flask-restful \
+    nltk \
+    pytest \
+    pytest-cov \
+    pytest_mock \
+    pytest-csv \
+    pytest-random-order \
+    sentencepiece \
+    wrapt \
+    zarr \
+    wandb \
+    tensorstore==0.1.45 \
+    pytest_mock \
+    pybind11 \
+    setuptools==69.5.1 \
+    datasets \
+    tiktoken \
+    pynvml
+
+    pip3 install huggingface_hub[cli]
+    python3 -m nltk.downloader punkt_tab
+
+    cd $STAGEDIR
+    git clone https://github.com/Dao-AILab/causal-conv1d causal-conv1d &&\
+        cd causal-conv1d &&\
+        git show --oneline -s &&\
+        pip install .
+
+    cd $STAGEDIR
+    git clone https://github.com/state-spaces/mamba mamba &&\
+        cd mamba &&\
+        git show --oneline -s &&\
+        pip install --no-build-isolation .
+
+    cd $STAGEDIR
+    git clone --recursive https://github.com/ROCm/TransformerEngine &&\
+        cd TransformerEngine &&\
+        pip install .
+
+    cd $WORKDIR/Megatron-LM
+    pip install -e .
