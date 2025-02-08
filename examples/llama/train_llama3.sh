@@ -216,6 +216,8 @@ EXTRA_ARGS="
     --use-distributed-optimizer \
     --overlap-param-gather \
     --overlap-grad-reduce \
+    --profile-step-start 1 \
+    --profile-step-end 2 \
 "
 
 if [ "$ENABLE_PROFILING" -eq 1 ]; then
@@ -266,9 +268,10 @@ run_cmd="
         $TRAIN_ARGS \
 "
 
-if [ "$ENABLE_PROFILING" -eq 1 ]; then
-    run_cmd="rocprof -i input3.txt $run_cmd"
-fi
+# if [ "$ENABLE_PROFILING" -eq 1 ]; then
+    # run_cmd="rocprof -i input4.txt -o counter4.csv $run_cmd"
+    # run_cmd="rocprofv3 --kernel-trace -i input4.txt -o counter4.txt -- $run_cmd"
+# fi
 
 # if [ "$TEE_OUTPUT" -eq 0 ]; then 
 #     run_cmd="$run_cmd >& $TRAIN_LOG"

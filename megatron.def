@@ -25,7 +25,7 @@ From: rocm/pytorch:latest
     export NVTE_FRAMEWORK=pytorch
     export PYTORCH_ROCM_ARCH=${PYTORCH_ROCM_ARCH_OVERRIDE}
     export NVTE_USE_HIPBLASLT=1
-    export OPENBLAS_NUM_THREADS=34
+    # export OPENBLAS_NUM_THREADS=34
 
     apt-get update && apt-get upgrade -y
 
